@@ -16,18 +16,25 @@ import numpy as np
 from six.moves import urllib
 import tensorflow as tf
 
+
 from odoo import models, fields, api
+
+
+
 
 class Importimage (models.Model):
     _name = 'image_recognizer.images'
-    name = fields.Char(string="Photo recognition", required=True)
+    animalname = fields.Char(string="Photo recognition")
+    name = fields.Char(string="Record Description")
+    probability = fields.Float(string="Prediction accuracy", store=True)
     imager = fields.Binary()
     datas = fields.Char()
     # description = fields.Char()
     image_filename = fields.Char("DONDOLO")
 
-    @api.onchange('imager')
-    def _onchange_imager(self):
+
+
+    def predict_image(self):
         datas = self.imager
 
         if datas:
@@ -146,8 +153,10 @@ class Importimage (models.Model):
                 #   encoding of the image.
                 # Runs the softmax tensor by feeding the image_data as input to the graph.
                 softmax_tensor = sess.graph.get_tensor_by_name('softmax:0')
-                predictions = sess.run(softmax_tensor,
-                                       {'DecodeJpeg/contents:0': image_data})
+                predictions = sess.run(softmax_tensor,{'DecodeJpeg/contents:0': image_data})
+
+
+                sess.close()
                 predictions = np.squeeze(predictions)
 
                 # Creates node ID --> English string lookup.
@@ -160,7 +169,9 @@ class Importimage (models.Model):
                     score = predictions[node_id]*100
                     descript = human_string
 
-            return descript, score
+            #return descript, score
+
+            return "dummy",0
 
 
         parser = argparse.ArgumentParser()
@@ -194,9 +205,7 @@ class Importimage (models.Model):
         )
         FLAGS, unparsed = parser.parse_known_args()
         image = (FLAGS.image_file if FLAGS.image_file else
-                 os.path.join(FLAGS.model_dir, "imagetorecognize.jpg"))
+                 os.path.join(FLAGS.model_dir, self.image_filename))
 
         if datas:
-            self.name, self.probability =run_inference_on_image(image)
-
-    probability = fields.Float(string="Prediction accuracy", store=True)
+            self.animalname, self.probability =run_inference_on_image(image)

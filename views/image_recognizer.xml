@@ -9,7 +9,8 @@
                     <sheet>
                         <group>
                             <field name="name" bold="on" size="double"/>
-                            <!--<field name="description" />-->
+                            <field name="animalname" string="description" />
+                            <button name="predict_image" string="Run Prediction" type="object" class="oe_highlight"  />
                             <field name="probability" widget="progressbar"  />
                             <div><field name="imager" widget='image' filename="image_filename" options='{"size": [150, 140]}'  />
                              </div>
