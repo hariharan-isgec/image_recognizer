@@ -169,9 +169,7 @@ class Importimage (models.Model):
                     score = predictions[node_id]*100
                     descript = human_string
 
-            #return descript, score
-
-            return "dummy",0
+            return descript, score
 
 
         parser = argparse.ArgumentParser()
